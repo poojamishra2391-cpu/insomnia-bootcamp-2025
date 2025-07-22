@@ -5,934 +5,957 @@ meta:
   created: 1753184594251
   modified: 1753184594251
   description: ""
+collection:
+  - name: accounts
+    meta:
+      id: fld_5ac0524e100a4827adc5a4592b2bc62a
+      created: 1753185831697
+      modified: 1753187298052
+      sortKey: -1753185831697
+      description: Operations related to account management (retrieval and balance updates)
+    children:
+      - url: "{{ _.base_url }}/accounts"
+        name: List all accounts
+        meta:
+          id: req_cec3902139714814a40e7a0ce21e2b1d
+          created: 1753185831722
+          modified: 1753185831722
+          isPrivate: false
+          description: Returns a list of all accounts with basic details.
+          sortKey: -1753185831722
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/accounts"
+        name: Create a new account
+        meta:
+          id: req_a20b3c390164440daab9467b5bd0b2c2
+          created: 1753185831725
+          modified: 1753186783230
+          isPrivate: false
+          description: Creates a new account with an initial balance. The account ID is
+            automatically generated.
+          sortKey: -1753185831725
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "type": "savings",
+              "initial_balance": 5000
+            }
+        headers:
+          - name: Content-Type
+            disabled: false
+            value: application/json
+        scripts:
+          preRequest: ""
+          afterResponse: >-
+            //Extract account_id from the response and store it in the
+            environment
+
+            let data =
+            insomnia.response.json();insomnia.environment.set("accountId",
+            data.account_id);
+             console.log(`Response status: ${insomnia.response.code}`);if (insomnia.response.code !== 201) {console.log("Warning: Unexpected status code");}
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/accounts/{{ _.accountId }}"
+        name: Retrieve a single account
+        meta:
+          id: req_0aad7c170ddb4f77b80b1832375378dc
+          created: 1753185831729
+          modified: 1753187296921
+          isPrivate: false
+          description: Returns details for the specified account including current balance.
+          sortKey: -1753185831729
+        method: GET
+        scripts:
+          preRequest: "if (!insomnia.environment.get(\"accountId\")) {
+
+
+            \  const host = insomnia.environment.get(\"host\");
+
+
+            \  const scheme = insomnia.environment.get(\"scheme\");
+
+
+            \  const baseUrl = `${scheme}://${host}`;
+
+            \\ 
+
+            \  const createAccountRequest = {
+
+
+            \    url: `${baseUrl}/accounts`,
+
+
+            \    method: 'POST',
+
+
+            \    headers: {
+
+
+            \      'Content-Type': 'application/json',
+
+
+            \    },
+
+
+            \    body: {
+
+
+            \      mode: 'raw',
+
+
+            \      raw: JSON.stringify({
+
+
+            \        type: 'savings',
+
+
+            \        initial_balance: 5000.00,
+
+
+            \      }),
+
+
+            \    },
+
+
+            \  };
+
+            \\ 
+
+            \  const response = await new Promise((resolve, reject) => {
+
+
+            \    insomnia.sendRequest(createAccountRequest, (err, resp) => {
+
+
+            \      if (err != null) reject(err);
+
+
+            \      else resolve(resp);
+
+
+            \    });
+
+
+            \  });
+
+            \\ 
+
+            \  if (response.code !== 201) {
+
+
+            \    throw new Error(`Account creation failed. Status code:
+            ${response.code}`);
+
+
+            \  }
+
+            \\ 
+
+            \  const responseBody = JSON.parse(response.body.toString());
+
+
+            \  insomnia.environment.set('accountId', responseBody.account_id);
+
+
+            }
+
+            \ "
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/accounts/{{ _.accountId }}/debit"
+        name: Debit an account
+        meta:
+          id: req_3a3fd91e28444f1da85035baba54659d
+          created: 1753185831731
+          modified: 1753187290218
+          isPrivate: false
+          description: Decreases the account's balance by the specified amount.
+          sortKey: -1753185831731
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "amount": 100
+            }
+        headers:
+          - name: Content-Type
+            disabled: false
+            value: application/json
+        scripts:
+          preRequest: "if (!insomnia.environment.get(\"accountId\")) {
+
+
+            \  const host = insomnia.environment.get(\"host\");
+
+
+            \  const scheme = insomnia.environment.get(\"scheme\");
+
+
+            \  const baseUrl = `${scheme}://${host}`;
+
+            \\ 
+
+            \  const createAccountRequest = {
+
+
+            \    url: `${baseUrl}/accounts`,
+
+
+            \    method: 'POST',
+
+
+            \    headers: {
+
+
+            \      'Content-Type': 'application/json',
+
+
+            \    },
+
+
+            \    body: {
+
+
+            \      mode: 'raw',
+
+
+            \      raw: JSON.stringify({
+
+
+            \        type: 'savings',
+
+
+            \        initial_balance: 5000.00,
+
+
+            \      }),
+
+
+            \    },
+
+
+            \  };
+
+            \\ 
+
+            \  const response = await new Promise((resolve, reject) => {
+
+
+            \    insomnia.sendRequest(createAccountRequest, (err, resp) => {
+
+
+            \      if (err != null) reject(err);
+
+
+            \      else resolve(resp);
+
+
+            \    });
+
+
+            \  });
+
+            \\ 
+
+            \  if (response.code !== 201) {
+
+
+            \    throw new Error(`Account creation failed. Status code:
+            ${response.code}`);
+
+
+            \  }
+
+            \\ 
+
+            \  const responseBody = JSON.parse(response.body.toString());
+
+
+            \  insomnia.environment.set('accountId', responseBody.account_id);
+
+
+            }
+
+            \ "
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/accounts/{{ _.accountId }}/credit"
+        name: Credit an account
+        meta:
+          id: req_b3232f87435d444aa169a467e3d56bd6
+          created: 1753185831733
+          modified: 1753187282477
+          isPrivate: false
+          description: Increases the account's balance by the specified amount.
+          sortKey: -1753185831733
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "amount": 100
+            }
+        headers:
+          - name: Content-Type
+            disabled: false
+            value: application/json
+        scripts:
+          preRequest: "if (!insomnia.environment.get(\"accountId\")) {
+
+
+            \  const host = insomnia.environment.get(\"host\");
+
+
+            \  const scheme = insomnia.environment.get(\"scheme\");
+
+
+            \  const baseUrl = `${scheme}://${host}`;
+
+            \\ 
+
+            \  const createAccountRequest = {
+
+
+            \    url: `${baseUrl}/accounts`,
+
+
+            \    method: 'POST',
+
+
+            \    headers: {
+
+
+            \      'Content-Type': 'application/json',
+
+
+            \    },
+
+
+            \    body: {
+
+
+            \      mode: 'raw',
+
+
+            \      raw: JSON.stringify({
+
+
+            \        type: 'savings',
+
+
+            \        initial_balance: 5000.00,
+
+
+            \      }),
+
+
+            \    },
+
+
+            \  };
+
+            \\ 
+
+            \  const response = await new Promise((resolve, reject) => {
+
+
+            \    insomnia.sendRequest(createAccountRequest, (err, resp) => {
+
+
+            \      if (err != null) reject(err);
+
+
+            \      else resolve(resp);
+
+
+            \    });
+
+
+            \  });
+
+            \\ 
+
+            \  if (response.code !== 201) {
+
+
+            \    throw new Error(`Account creation failed. Status code:
+            ${response.code}`);
+
+
+            \  }
+
+            \\ 
+
+            \  const responseBody = JSON.parse(response.body.toString());
+
+
+            \  insomnia.environment.set('accountId', responseBody.account_id);
+
+
+            }
+
+            \ "
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: health
+    meta:
+      id: fld_448f01e76c5642c1acd7a4496d8e6cf1
+      created: 1753185831702
+      modified: 1753185831702
+      sortKey: -1753185831702
+      description: Health check endpoints for monitoring service status
+    children:
+      - url: "{{ _.base_url }}/health"
+        name: Health check endpoint
+        meta:
+          id: req_eaef815c9d30467cb6d41f840895d220
+          created: 1753185831705
+          modified: 1753185831705
+          isPrivate: false
+          description: Returns the API's health status
+          sortKey: -1753185831705
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/health"
+        name: Health check endpoint (HEAD)
+        meta:
+          id: req_17ba39e5810042738afd4f0a5f167165
+          created: 1753185831719
+          modified: 1753185831719
+          isPrivate: false
+          description: Returns the API's health status without body
+          sortKey: -1753185831719
+        method: HEAD
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
     id: jar_2006175ecade2000c81cc6bc7d6cc157f7546a6c
     created: 1753184594331
-    modified: 1753184594331
+    modified: 1753187298035
 environments:
   name: Base Environment
   meta:
     id: env_2006175ecade2000c81cc6bc7d6cc157f7546a6c
     created: 1753184594321
-    modified: 1753184594321
+    modified: 1753187298049
     isPrivate: false
+  data:
+    "": ""
+  subEnvironments:
+    - name: OpenAPI env localhost:8081
+      meta:
+        id: env_2ae88fdba7fb441e90b149af8f32e7dd
+        created: 1753185611015
+        modified: 1753187298042
+        isPrivate: false
+        sortKey: 1753185611015
+      data:
+        scheme: https
+        host: kong-1b683354d5euvprhl.kongcloud.dev
+        base_url: "{{ _.scheme }}://{{ _.host }}"
+        accountId: 52d4693d-6c0f-499b-98a4-fa74f3682c43
 spec:
   contents:
-    openapi: 3.0.4
+    openapi: 3.0.3
     info:
-      title: Swagger Petstore - OpenAPI 3.0
-      description: |-
-        This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
-        Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
-        You can now help us improve the API whether it's by making changes to the definition itself or to the code.
-        That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
-
-        Some useful links:
-        - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
-        - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
-      termsOfService: https://swagger.io/terms/
+      title: Accounts API
+      version: 1.0.0
+      description: This API manages account information and balances.
       contact:
-        email: apiteam@swagger.io
-      license:
-        name: Apache 2.0
-        url: https://www.apache.org/licenses/LICENSE-2.0.html
-      version: 1.0.12
-    externalDocs:
-      description: Find out more about Swagger
-      url: https://swagger.io
+        email: example@test.com
     servers:
-      - url: https://petstore3.swagger.io/api/v3
+      - url: http://localhost:8081
+        description: Local development server
     tags:
-      - name: pet
-        description: Everything about your Pets
-        externalDocs:
-          description: Find out more
-          url: https://swagger.io
-      - name: store
-        description: Access to Petstore orders
-        externalDocs:
-          description: Find out more about our store
-          url: https://swagger.io
-      - name: user
-        description: Operations about user
+      - name: accounts
+        description: Operations related to account management (retrieval and balance
+          updates)
+      - name: health
+        description: Health check endpoints for monitoring service status
     paths:
-      /pet:
-        put:
+      /health:
+        get:
           tags:
-            - pet
-          summary: Update an existing pet.
-          description: Update an existing pet by Id.
-          operationId: updatePet
+            - health
+          operationId: healthCheck
+          summary: Health check endpoint
+          description: Returns the API's health status
+          responses:
+            "200":
+              description: API is healthy
+              content:
+                application/json:
+                  schema:
+                    type: string
+                  examples:
+                    success:
+                      summary: Healthy response
+                      value: Accounts API is running
+        head:
+          tags:
+            - health
+          operationId: healthCheckHead
+          summary: Health check endpoint (HEAD)
+          description: Returns the API's health status without body
+          responses:
+            "200":
+              description: API is healthy
+      /accounts:
+        get:
+          tags:
+            - accounts
+          operationId: listAccounts
+          summary: List all accounts
+          description: Returns a list of all accounts with basic details.
+          responses:
+            "200":
+              description: A list of accounts was successfully retrieved
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Account"
+                  examples:
+                    multiple_accounts:
+                      summary: Multiple accounts example
+                      value:
+                        - account_id: 123e4567-e89b-12d3-a456-426614174000
+                          type: checking
+                          balance: 1500
+                        - account_id: 987fcdeb-51a2-43e7-89bc-765432198765
+                          type: savings
+                          balance: 5000
+            "500":
+              description: Failed to retrieve accounts due to internal server error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    lock_error:
+                      summary: Database lock error
+                      value:
+                        error_code: INTERNAL_ERROR
+                        message: "Lock error: failed to acquire lock while listing accounts"
+        post:
+          tags:
+            - accounts
+          operationId: createAccount
+          summary: Create a new account
+          description: Creates a new account with an initial balance. The account ID is
+            automatically generated.
           requestBody:
-            description: Update an existent pet in the store
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/Pet"
-              application/xml:
-                schema:
-                  $ref: "#/components/schemas/Pet"
-              application/x-www-form-urlencoded:
-                schema:
-                  $ref: "#/components/schemas/Pet"
+            description: Details for the new account including type and initial balance. The
+              account ID will be automatically generated.
             required: true
-          responses:
-            "200":
-              description: Successful operation
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Pet"
-                application/xml:
-                  schema:
-                    $ref: "#/components/schemas/Pet"
-            "400":
-              description: Invalid ID supplied
-            "404":
-              description: Pet not found
-            "422":
-              description: Validation exception
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-          security:
-            - petstore_auth:
-                - write:pets
-                - read:pets
-        post:
-          tags:
-            - pet
-          summary: Add a new pet to the store.
-          description: Add a new pet to the store.
-          operationId: addPet
-          requestBody:
-            description: Create a new pet in the store
             content:
               application/json:
                 schema:
-                  $ref: "#/components/schemas/Pet"
-              application/xml:
-                schema:
-                  $ref: "#/components/schemas/Pet"
-              application/x-www-form-urlencoded:
-                schema:
-                  $ref: "#/components/schemas/Pet"
+                  $ref: "#/components/schemas/CreateAccountRequest"
+                examples:
+                  checking_account:
+                    summary: Create checking account
+                    value:
+                      type: checking
+                      initial_balance: 1000
+                  savings_account:
+                    summary: Create savings account
+                    value:
+                      type: savings
+                      initial_balance: 5000
+          responses:
+            "201":
+              description: Account created successfully
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/Account"
+                  examples:
+                    new_account:
+                      summary: Newly created account
+                      value:
+                        account_id: 123e4567-e89b-12d3-a456-426614174000
+                        type: checking
+                        balance: 1000
+            "400":
+              description: Failed to create account due to invalid input
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    invalid_balance:
+                      summary: Invalid initial balance
+                      value:
+                        error_code: INVALID_INPUT
+                        message: "Failed to create account: Initial balance must be non-negative"
+            "500":
+              description: Failed to create account due to internal server error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    creation_error:
+                      summary: Account creation failed
+                      value:
+                        error_code: INTERNAL_ERROR
+                        message: "Failed to create account: Internal server error occurred"
+      /accounts/{accountId}:
+        get:
+          tags:
+            - accounts
+          operationId: getAccountById
+          summary: Retrieve a single account
+          description: Returns details for the specified account including current balance.
+          parameters:
+            - name: accountId
+              in: path
+              required: true
+              description: The UUID of the account to retrieve
+              schema:
+                type: string
+                format: uuid
+              example: 123e4567-e89b-12d3-a456-426614174000
+          responses:
+            "200":
+              description: Account details retrieved successfully
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/Account"
+                  examples:
+                    checking_account:
+                      summary: Example checking account
+                      value:
+                        account_id: 123e4567-e89b-12d3-a456-426614174000
+                        type: checking
+                        balance: 1500
+            "404":
+              description: Account lookup failed - specified account ID does not exist
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    not_found:
+                      summary: Account not found error
+                      value:
+                        error_code: NOT_FOUND
+                        message: "Failed to retrieve account: ID 123e4567-e89b-12d3-a456-426614174000
+                          not found"
+            "500":
+              description: Failed to retrieve account details due to internal server error
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    server_error:
+                      summary: Internal server error
+                      value:
+                        error_code: INTERNAL_ERROR
+                        message: "Failed to retrieve account: Internal server error occurred"
+      /accounts/{accountId}/debit:
+        post:
+          tags:
+            - accounts
+          operationId: debitAccount
+          summary: Debit an account
+          description: Decreases the account's balance by the specified amount.
+          parameters:
+            - name: accountId
+              in: path
+              required: true
+              description: The UUID of the account to debit
+              schema:
+                type: string
+                format: uuid
+              example: 123e4567-e89b-12d3-a456-426614174000
+          requestBody:
+            description: Specifies the amount to debit from the account balance.
             required: true
-          responses:
-            "200":
-              description: Successful operation
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Pet"
-                application/xml:
-                  schema:
-                    $ref: "#/components/schemas/Pet"
-            "400":
-              description: Invalid input
-            "422":
-              description: Validation exception
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-          security:
-            - petstore_auth:
-                - write:pets
-                - read:pets
-      /pet/findByStatus:
-        get:
-          tags:
-            - pet
-          summary: Finds Pets by status.
-          description: Multiple status values can be provided with comma separated strings.
-          operationId: findPetsByStatus
-          parameters:
-            - name: status
-              in: query
-              description: Status values that need to be considered for filter
-              required: false
-              explode: true
-              schema:
-                type: string
-                default: available
-                enum:
-                  - available
-                  - pending
-                  - sold
-          responses:
-            "200":
-              description: successful operation
-              content:
-                application/json:
-                  schema:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Pet"
-                application/xml:
-                  schema:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Pet"
-            "400":
-              description: Invalid status value
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-          security:
-            - petstore_auth:
-                - write:pets
-                - read:pets
-      /pet/findByTags:
-        get:
-          tags:
-            - pet
-          summary: Finds Pets by tags.
-          description: Multiple tags can be provided with comma separated strings. Use
-            tag1, tag2, tag3 for testing.
-          operationId: findPetsByTags
-          parameters:
-            - name: tags
-              in: query
-              description: Tags to filter by
-              required: false
-              explode: true
-              schema:
-                type: array
-                items:
-                  type: string
-          responses:
-            "200":
-              description: successful operation
-              content:
-                application/json:
-                  schema:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Pet"
-                application/xml:
-                  schema:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Pet"
-            "400":
-              description: Invalid tag value
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-          security:
-            - petstore_auth:
-                - write:pets
-                - read:pets
-      /pet/{petId}:
-        get:
-          tags:
-            - pet
-          summary: Find pet by ID.
-          description: Returns a single pet.
-          operationId: getPetById
-          parameters:
-            - name: petId
-              in: path
-              description: ID of pet to return
-              required: true
-              schema:
-                type: integer
-                format: int64
-          responses:
-            "200":
-              description: successful operation
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Pet"
-                application/xml:
-                  schema:
-                    $ref: "#/components/schemas/Pet"
-            "400":
-              description: Invalid ID supplied
-            "404":
-              description: Pet not found
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-          security:
-            - petstore_auth:
-                - write:pets
-                - read:pets
-        post:
-          tags:
-            - pet
-          summary: Updates a pet in the store with form data.
-          description: Updates a pet resource based on the form data.
-          operationId: updatePetWithForm
-          parameters:
-            - name: petId
-              in: path
-              description: ID of pet that needs to be updated
-              required: true
-              schema:
-                type: integer
-                format: int64
-            - name: name
-              in: query
-              description: Name of pet that needs to be updated
-              schema:
-                type: string
-            - name: status
-              in: query
-              description: Status of pet that needs to be updated
-              schema:
-                type: string
-          responses:
-            "200":
-              description: successful operation
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Pet"
-                application/xml:
-                  schema:
-                    $ref: "#/components/schemas/Pet"
-            "400":
-              description: Invalid input
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-          security:
-            - petstore_auth:
-                - write:pets
-                - read:pets
-        delete:
-          tags:
-            - pet
-          summary: Deletes a pet.
-          description: Delete a pet.
-          operationId: deletePet
-          parameters:
-            - name: api_key
-              in: header
-              description: ""
-              required: false
-              schema:
-                type: string
-            - name: petId
-              in: path
-              description: Pet id to delete
-              required: true
-              schema:
-                type: integer
-                format: int64
-          responses:
-            "200":
-              description: Pet deleted
-            "400":
-              description: Invalid pet value
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-          security:
-            - petstore_auth:
-                - write:pets
-                - read:pets
-      /pet/{petId}/uploadImage:
-        post:
-          tags:
-            - pet
-          summary: Uploads an image.
-          description: Upload image of the pet.
-          operationId: uploadFile
-          parameters:
-            - name: petId
-              in: path
-              description: ID of pet to update
-              required: true
-              schema:
-                type: integer
-                format: int64
-            - name: additionalMetadata
-              in: query
-              description: Additional Metadata
-              required: false
-              schema:
-                type: string
-          requestBody:
-            content:
-              application/octet-stream:
-                schema:
-                  type: string
-                  format: binary
-          responses:
-            "200":
-              description: successful operation
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/ApiResponse"
-            "400":
-              description: No file uploaded
-            "404":
-              description: Pet not found
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-          security:
-            - petstore_auth:
-                - write:pets
-                - read:pets
-      /store/inventory:
-        get:
-          tags:
-            - store
-          summary: Returns pet inventories by status.
-          description: Returns a map of status codes to quantities.
-          operationId: getInventory
-          responses:
-            "200":
-              description: successful operation
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    additionalProperties:
-                      type: integer
-                      format: int32
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-      /store/order:
-        post:
-          tags:
-            - store
-          summary: Place an order for a pet.
-          description: Place a new order in the store.
-          operationId: placeOrder
-          requestBody:
             content:
               application/json:
                 schema:
-                  $ref: "#/components/schemas/Order"
-              application/xml:
-                schema:
-                  $ref: "#/components/schemas/Order"
-              application/x-www-form-urlencoded:
-                schema:
-                  $ref: "#/components/schemas/Order"
+                  $ref: "#/components/schemas/UpdateBalanceRequest"
+                examples:
+                  small_debit:
+                    summary: Small debit amount
+                    value:
+                      amount: 100
+                  large_debit:
+                    summary: Large debit amount
+                    value:
+                      amount: 1000
           responses:
             "200":
-              description: successful operation
+              description: Account debited successfully
               content:
                 application/json:
                   schema:
-                    $ref: "#/components/schemas/Order"
+                    $ref: "#/components/schemas/Account"
+                  examples:
+                    successful_debit:
+                      summary: Account after successful debit
+                      value:
+                        account_id: 123e4567-e89b-12d3-a456-426614174000
+                        type: checking
+                        balance: 900
             "400":
-              description: Invalid input
-            "422":
-              description: Validation exception
-            default:
-              description: Unexpected error
+              description: Debit operation failed due to insufficient funds or invalid amount
               content:
                 application/json:
                   schema:
-                    $ref: "#/components/schemas/Error"
-      /store/order/{orderId}:
-        get:
-          tags:
-            - store
-          summary: Find purchase order by ID.
-          description: For valid response try integer IDs with value <= 5 or > 10. Other
-            values will generate exceptions.
-          operationId: getOrderById
-          parameters:
-            - name: orderId
-              in: path
-              description: ID of order that needs to be fetched
-              required: true
-              schema:
-                type: integer
-                format: int64
-          responses:
-            "200":
-              description: successful operation
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Order"
-                application/xml:
-                  schema:
-                    $ref: "#/components/schemas/Order"
-            "400":
-              description: Invalid ID supplied
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    insufficient_funds:
+                      summary: Insufficient funds error
+                      value:
+                        error_code: INSUFFICIENT_FUNDS
+                        message: "Failed to debit account: Insufficient funds - balance is 900.00,
+                          attempted to debit 1000.00"
             "404":
-              description: Order not found
-            default:
-              description: Unexpected error
+              description: Debit operation failed - account not found
               content:
                 application/json:
                   schema:
-                    $ref: "#/components/schemas/Error"
-        delete:
-          tags:
-            - store
-          summary: Delete purchase order by identifier.
-          description: For valid response try integer IDs with value < 1000. Anything
-            above 1000 or nonintegers will generate API errors.
-          operationId: deleteOrder
-          parameters:
-            - name: orderId
-              in: path
-              description: ID of the order that needs to be deleted
-              required: true
-              schema:
-                type: integer
-                format: int64
-          responses:
-            "200":
-              description: order deleted
-            "400":
-              description: Invalid ID supplied
-            "404":
-              description: Order not found
-            default:
-              description: Unexpected error
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    not_found:
+                      summary: Account not found
+                      value:
+                        error_code: NOT_FOUND
+                        message: "Failed to debit account: Account does not exist"
+            "500":
+              description: Failed to process debit operation due to internal server error
               content:
                 application/json:
                   schema:
-                    $ref: "#/components/schemas/Error"
-      /user:
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    server_error:
+                      summary: Internal error
+                      value:
+                        error_code: INTERNAL_ERROR
+                        message: "Failed to debit account: Internal server error occurred"
+      /accounts/{accountId}/credit:
         post:
           tags:
-            - user
-          summary: Create user.
-          description: This can only be done by the logged in user.
-          operationId: createUser
+            - accounts
+          operationId: creditAccount
+          summary: Credit an account
+          description: Increases the account's balance by the specified amount.
+          parameters:
+            - name: accountId
+              in: path
+              required: true
+              description: The UUID of the account to credit
+              schema:
+                type: string
+                format: uuid
+              example: 123e4567-e89b-12d3-a456-426614174000
           requestBody:
-            description: Created user object
+            description: Specifies the amount to credit to the account balance.
+            required: true
             content:
               application/json:
                 schema:
-                  $ref: "#/components/schemas/User"
-              application/xml:
-                schema:
-                  $ref: "#/components/schemas/User"
-              application/x-www-form-urlencoded:
-                schema:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/UpdateBalanceRequest"
+                examples:
+                  small_credit:
+                    summary: Small credit amount
+                    value:
+                      amount: 500
+                  large_credit:
+                    summary: Large credit amount
+                    value:
+                      amount: 5000
           responses:
             "200":
-              description: successful operation
+              description: Account credited successfully
               content:
                 application/json:
                   schema:
-                    $ref: "#/components/schemas/User"
-                application/xml:
-                  schema:
-                    $ref: "#/components/schemas/User"
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-      /user/createWithList:
-        post:
-          tags:
-            - user
-          summary: Creates list of users with given input array.
-          description: Creates list of users with given input array.
-          operationId: createUsersWithListInput
-          requestBody:
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/User"
-          responses:
-            "200":
-              description: Successful operation
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/User"
-                application/xml:
-                  schema:
-                    $ref: "#/components/schemas/User"
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-      /user/login:
-        get:
-          tags:
-            - user
-          summary: Logs user into the system.
-          description: Log into the system.
-          operationId: loginUser
-          parameters:
-            - name: username
-              in: query
-              description: The user name for login
-              required: false
-              schema:
-                type: string
-            - name: password
-              in: query
-              description: The password for login in clear text
-              required: false
-              schema:
-                type: string
-          responses:
-            "200":
-              description: successful operation
-              headers:
-                X-Rate-Limit:
-                  description: calls per hour allowed by the user
-                  schema:
-                    type: integer
-                    format: int32
-                X-Expires-After:
-                  description: date in UTC when token expires
-                  schema:
-                    type: string
-                    format: date-time
-              content:
-                application/xml:
-                  schema:
-                    type: string
-                application/json:
-                  schema:
-                    type: string
+                    $ref: "#/components/schemas/Account"
+                  examples:
+                    successful_credit:
+                      summary: Account after successful credit
+                      value:
+                        account_id: 123e4567-e89b-12d3-a456-426614174000
+                        type: checking
+                        balance: 2000
             "400":
-              description: Invalid username/password supplied
-            default:
-              description: Unexpected error
+              description: Credit operation failed due to invalid amount
               content:
                 application/json:
                   schema:
-                    $ref: "#/components/schemas/Error"
-      /user/logout:
-        get:
-          tags:
-            - user
-          summary: Logs out current logged in user session.
-          description: Log user out of the system.
-          operationId: logoutUser
-          responses:
-            "200":
-              description: successful operation
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
-      /user/{username}:
-        get:
-          tags:
-            - user
-          summary: Get user by user name.
-          description: Get user detail based on username.
-          operationId: getUserByName
-          parameters:
-            - name: username
-              in: path
-              description: The name that needs to be fetched. Use user1 for testing
-              required: true
-              schema:
-                type: string
-          responses:
-            "200":
-              description: successful operation
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/User"
-                application/xml:
-                  schema:
-                    $ref: "#/components/schemas/User"
-            "400":
-              description: Invalid username supplied
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    invalid_amount:
+                      summary: Invalid amount error
+                      value:
+                        error_code: INVALID_INPUT
+                        message: "Failed to credit account: Amount must be positive"
             "404":
-              description: User not found
-            default:
-              description: Unexpected error
+              description: Credit operation failed - account not found
               content:
                 application/json:
                   schema:
-                    $ref: "#/components/schemas/Error"
-        put:
-          tags:
-            - user
-          summary: Update user resource.
-          description: This can only be done by the logged in user.
-          operationId: updateUser
-          parameters:
-            - name: username
-              in: path
-              description: name that need to be deleted
-              required: true
-              schema:
-                type: string
-          requestBody:
-            description: Update an existent user in the store
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/User"
-              application/xml:
-                schema:
-                  $ref: "#/components/schemas/User"
-              application/x-www-form-urlencoded:
-                schema:
-                  $ref: "#/components/schemas/User"
-          responses:
-            "200":
-              description: successful operation
-            "400":
-              description: bad request
-            "404":
-              description: user not found
-            default:
-              description: Unexpected error
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    not_found:
+                      summary: Account not found
+                      value:
+                        error_code: NOT_FOUND
+                        message: "Failed to credit account: Account does not exist"
+            "500":
+              description: Failed to process credit operation due to internal server error
               content:
                 application/json:
                   schema:
-                    $ref: "#/components/schemas/Error"
-        delete:
-          tags:
-            - user
-          summary: Delete user resource.
-          description: This can only be done by the logged in user.
-          operationId: deleteUser
-          parameters:
-            - name: username
-              in: path
-              description: The name that needs to be deleted
-              required: true
-              schema:
-                type: string
-          responses:
-            "200":
-              description: User deleted
-            "400":
-              description: Invalid username supplied
-            "404":
-              description: User not found
-            default:
-              description: Unexpected error
-              content:
-                application/json:
-                  schema:
-                    $ref: "#/components/schemas/Error"
+                    $ref: "#/components/schemas/ErrorResponse"
+                  examples:
+                    server_error:
+                      summary: Internal error
+                      value:
+                        error_code: INTERNAL_ERROR
+                        message: "Failed to credit account: Internal server error occurred"
     components:
       schemas:
-        Order:
+        Account:
           type: object
+          description: Represents a bank account with its core details including ID, type,
+            and current balance.
+          example:
+            account_id: 123e4567-e89b-12d3-a456-426614174000
+            type: checking
+            balance: 1500
           properties:
-            id:
-              type: integer
-              format: int64
-              example: 10
-            petId:
-              type: integer
-              format: int64
-              example: 198772
-            quantity:
-              type: integer
-              format: int32
-              example: 7
-            shipDate:
+            account_id:
               type: string
-              format: date-time
-            status:
-              type: string
-              description: Order Status
-              example: approved
-              enum:
-                - placed
-                - approved
-                - delivered
-            complete:
-              type: boolean
-          xml:
-            name: order
-        Category:
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int64
-              example: 1
-            name:
-              type: string
-              example: Dogs
-          xml:
-            name: category
-        User:
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int64
-              example: 10
-            username:
-              type: string
-              example: theUser
-            firstName:
-              type: string
-              example: John
-            lastName:
-              type: string
-              example: James
-            email:
-              type: string
-              example: john@email.com
-            password:
-              type: string
-              example: "12345"
-            phone:
-              type: string
-              example: "12345"
-            userStatus:
-              type: integer
-              description: User Status
-              format: int32
-              example: 1
-          xml:
-            name: user
-        Tag:
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int64
-            name:
-              type: string
-          xml:
-            name: tag
-        Pet:
-          required:
-            - name
-            - photoUrls
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int64
-              example: 10
-            name:
-              type: string
-              example: doggie
-            category:
-              $ref: "#/components/schemas/Category"
-            photoUrls:
-              type: array
-              xml:
-                wrapped: true
-              items:
-                type: string
-                xml:
-                  name: photoUrl
-            tags:
-              type: array
-              xml:
-                wrapped: true
-              items:
-                $ref: "#/components/schemas/Tag"
-            status:
-              type: string
-              description: pet status in the store
-              enum:
-                - available
-                - pending
-                - sold
-          xml:
-            name: pet
-        ApiResponse:
-          type: object
-          properties:
-            code:
-              type: integer
-              format: int32
+              format: uuid
+              description: Unique identifier for the account (UUID v4)
+              example: 123e4567-e89b-12d3-a456-426614174000
             type:
               type: string
-            message:
-              type: string
-          xml:
-            name: "##default"
-        Error:
+              description: The type of the account (e.g., checking, savings)
+              example: checking
+            balance:
+              type: number
+              format: double
+              description: The current balance of the account in the account's currency
+              example: 1500
+        CreateAccountRequest:
           type: object
+          description: Request payload for creating a new account.
+          example:
+            type: savings
+            initial_balance: 5000
+          required:
+            - type
+            - initial_balance
           properties:
-            code:
+            type:
               type: string
+              description: The type of account to create (e.g., checking, savings)
+              example: savings
+            initial_balance:
+              type: number
+              format: double
+              description: The initial balance to fund the account with
+              example: 5000
+        UpdateBalanceRequest:
+          type: object
+          description: Request payload for updating an account's balance via credit or
+            debit operations.
+          example:
+            amount: 100
+          required:
+            - amount
+          properties:
+            amount:
+              type: number
+              format: double
+              description: The amount to credit or debit from the account
+              example: 100
+        ErrorResponse:
+          type: object
+          description: Standard error response structure for all error cases.
+          example:
+            error_code: NOT_FOUND
+            message: The requested account does not exist.
+          required:
+            - error_code
+            - message
+          properties:
+            error_code:
+              type: string
+              description: A standardized error code identifying the type of error
+              example: NOT_FOUND
+              enum:
+                - INTERNAL_ERROR
+                - NOT_FOUND
+                - INSUFFICIENT_FUNDS
+                - INVALID_INPUT
             message:
               type: string
-          required:
-            - code
-            - message
-      requestBodies:
-        Pet:
-          description: Pet object that needs to be added to the store
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Pet"
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Pet"
-        UserArray:
-          description: List of user object
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
-      securitySchemes:
-        petstore_auth:
-          type: oauth2
-          flows:
-            implicit:
-              authorizationUrl: https://petstore3.swagger.io/oauth/authorize
-              scopes:
-                write:pets: modify pets in your account
-                read:pets: read your pets
-        api_key:
-          type: apiKey
-          name: api_key
-          in: header
+              description: A human-readable description of the error
+              example: The requested account does not exist.
   meta:
     id: spc_49bd30856e4a4552920780337f52108c
     created: 1753184594309
-    modified: 1753184598210
+    modified: 1753185604493
