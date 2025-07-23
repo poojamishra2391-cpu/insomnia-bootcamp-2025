@@ -315,7 +315,7 @@ collection:
         meta:
           id: req_b3232f87435d444aa169a467e3d56bd6
           created: 1753185831733
-          modified: 1753187282477
+          modified: 1753257884325
           isPrivate: false
           description: Increases the account's balance by the specified amount.
           sortKey: -1753185831733
@@ -326,10 +326,27 @@ collection:
             {
               "amount": 100
             }
+        parameters:
+          - id: pair_2e64244bebfd415d9c0b34aef6bdc168
+            name: ""
+            value: ""
+            description: ""
+            disabled: false
+          - id: pair_39ac2dc12d354182b605f71e86ca6e6a
+            name: ""
+            value: ""
+            description: ""
+            disabled: false
         headers:
           - name: Content-Type
             disabled: false
             value: application/json
+            id: pair_d423acf2ad58436997085d555bfdab40
+          - id: pair_08dcd91f32e24939a50970672e1b584a
+            name: "{{api-key}}"
+            value: ""
+            description: ""
+            disabled: false
         scripts:
           preRequest: "if (!insomnia.environment.get(\"accountId\")) {
 
@@ -498,7 +515,7 @@ environments:
       meta:
         id: env_2ae88fdba7fb441e90b149af8f32e7dd
         created: 1753185611015
-        modified: 1753245964754
+        modified: 1753258248184
         isPrivate: false
         sortKey: 1753185611015
       data:
@@ -506,6 +523,10 @@ environments:
         host: kong-1b683354d5euvprhl.kongcloud.dev
         base_url: "{{ _.scheme }}://{{ _.host }}"
         accountId: 52d4693d-6c0f-499b-98a4-fa74f3682c43
+        api_key: "{% vault 'hashicorp', 'cloudCred_db8c219983d34decbecbb8a273ecab58',
+          'eyJzZWNyZXROYW1lIjoidHJhbnNhY3Rpb25zLWFwaS9hcGkta2V5Iiwia3ZWZXJzaW9u\
+          IjoidjIiLCJzZWNyZXRFbmdpbmVQYXRoIjoic2VjcmV0Iiwic2VjcmV0S2V5IjoidmFsd\
+          WUifQ==' %}"
 spec:
   contents:
     openapi: 3.0.3
