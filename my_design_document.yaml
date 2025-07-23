@@ -10,7 +10,7 @@ collection:
     meta:
       id: fld_5ac0524e100a4827adc5a4592b2bc62a
       created: 1753185831697
-      modified: 1753245964758
+      modified: 1753258394128
       sortKey: -1753185831697
       description: Operations related to account management (retrieval and balance updates)
     children:
@@ -191,7 +191,7 @@ collection:
         meta:
           id: req_3a3fd91e28444f1da85035baba54659d
           created: 1753185831731
-          modified: 1753187290218
+          modified: 1753258391951
           isPrivate: false
           description: Decreases the account's balance by the specified amount.
           sortKey: -1753185831731
@@ -206,6 +206,12 @@ collection:
           - name: Content-Type
             disabled: false
             value: application/json
+        authentication:
+          type: apikey
+          disabled: false
+          key: X-BanKong-API-Key
+          value: "{{ api_key }}"
+          addTo: header
         scripts:
           preRequest: "if (!insomnia.environment.get(\"accountId\")) {
 
@@ -464,11 +470,17 @@ collection:
         meta:
           id: req_eaef815c9d30467cb6d41f840895d220
           created: 1753185831705
-          modified: 1753185831705
+          modified: 1753258369176
           isPrivate: false
           description: Returns the API's health status
           sortKey: -1753185831705
         method: GET
+        authentication:
+          type: apikey
+          disabled: false
+          key: X-BanKong-API-Key
+          value: "{{ api_key }}"
+          addTo: header
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -500,13 +512,13 @@ cookieJar:
   meta:
     id: jar_2006175ecade2000c81cc6bc7d6cc157f7546a6c
     created: 1753184594331
-    modified: 1753245964752
+    modified: 1753258394106
 environments:
   name: Base Environment
   meta:
     id: env_2006175ecade2000c81cc6bc7d6cc157f7546a6c
     created: 1753184594321
-    modified: 1753245964756
+    modified: 1753258394126
     isPrivate: false
   data:
     "": ""
@@ -515,7 +527,7 @@ environments:
       meta:
         id: env_2ae88fdba7fb441e90b149af8f32e7dd
         created: 1753185611015
-        modified: 1753258248184
+        modified: 1753258394115
         isPrivate: false
         sortKey: 1753185611015
       data:
